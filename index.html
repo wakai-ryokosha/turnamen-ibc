@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Turnamen Badminton</title>
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        body { background-color: #f3f4f6; font-family: sans-serif; }
+    </style>
+</head>
+<body class="py-10 px-4">
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
+        <h1 class="text-2xl font-bold text-center text-blue-600 mb-2">Formulir Pendaftaran Turnamen Badminton</h1>
+        <p class="text-gray-500 text-center text-sm mb-6">Silakan isi data klub dan regu Anda secara lengkap.</p>
+
+        <form id="badmintonForm" class="space-y-6">
+            <!-- Informasi Klub -->
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Klub / PB *</label>
+                    <input type="text" id="namaKlub" required class="w-full p-2 border border-gray-300 rounded bg-white focus:outline-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nomor Telepon Kontak *</label>
+                    <input type="tel" id="phone" required placeholder="Contoh: 08123456789" class="w-full p-2 border border-gray-300 rounded bg-white focus:outline-blue-500">
+                </div>
+            </div>
+
+            <!-- Pilihan Jumlah Regu -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Regu yang Didaftarkan:</label>
+                <select id="jumlahRegu" class="w-full md:w-1/3 p-2 border border-gray-300 rounded bg-white focus:outline-blue-500">
+                    <option value="1">1 Regu</option>
+                    <option value="2">2 Regu</option>
+                    <option value="3">3 Regu</option>
+                </select>
+            </div>
+
+            <!-- Kontainer Regu Dinamis -->
+            <div id="reguContainer" class="space-y-6"></div>
+
+            <!-- Bagian Pembayaran / Bukti Transfer -->
+            <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Unggah Bukti Transfer *</label>
+                <input type="file" id="buktiTransfer" accept="image/*" required class="w-full p-2 border border-dashed border-orange-300 bg-white rounded cursor-pointer">
+                <p class="text-xs text-gray-500 mt-1">Format file harus berupa gambar (.jpg, .jpeg, .png)</p>
+            </div>
+
+            <!-- Tombol Submit -->
+            <button type="submit" id="btnSubmit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">
+                Kirim Pendaftaran
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyV5a26iTGO_5xLTPe7cmjHcVqDFFKWDqe21jqF_MRenIgPm6cnOx20Ndj4gYTVoZCq/exec";
+
+        const reguContainer = document.getElementById('reguContainer');
+        const jumlahReguSelect = document.getElementById('jumlahRegu');
+
+        function renderReguForm(jumlah) {
+            reguContainer.innerHTML = '';
+            for (let i = 1; i <= jumlah; i++) {
+                const reguBox = document.createElement('div');
+                reguBox.className = "p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-4 regu-item";
+                reguBox.innerHTML = `
+                    <h3 class="font-bold text-lg text-gray-800 border-b pb-1">Data Regu ${i}</h3>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Regu (Misal: ${document.getElementById('namaKlub').value || 'PB'} A) *</label>
+                        <input type="text" name="namaRegu" required class="w-full p-2 border border-gray-300 rounded bg-white">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-3 rounded border">
+                        <div class="col-span-1 md:col-span-2 font-semibold text-sm text-blue-600">Pasangan Pertama</div>
+                        <input type="text" name="p1_1" placeholder="Nama Pemain 1 *" required class="w-full p-2 border border-gray-300 rounded">
+                        <input type="text" name="p1_2" placeholder="Nama Pemain 2 *" required class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-3 rounded border">
+                        <div class="col-span-1 md:col-span-2 font-semibold text-sm text-blue-600">Pasangan Kedua</div>
+                        <input type="text" name="p2_1" placeholder="Nama Pemain 1 *" required class="w-full p-2 border border-gray-300 rounded">
+                        <input type="text" name="p2_2" placeholder="Nama Pemain 2 *" required class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-3 rounded border">
+                        <div class="col-span-1 md:col-span-2 font-semibold text-sm text-blue-600">Pasangan Ketiga</div>
+                        <input type="text" name="p3_1" placeholder="Nama Pemain 1 *" required class="w-full p-2 border border-gray-300 rounded">
+                        <input type="text" name="p3_2" placeholder="Nama Pemain 2 *" required class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pemain Cadangan *</label>
+                        <input type="text" name="cadangan" required class="w-full p-2 border border-gray-300 rounded bg-white">
+                    </div>
+                `;
+                reguContainer.appendChild(reguBox);
+            }
+        }
+
+        jumlahReguSelect.addEventListener('change', (e) => renderReguForm(e.target.value));
+        renderReguForm(1); // Render awal 1 regu
+
+        // Fungsi konversi file gambar ke Base64 string
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve({ data: reader.result, name: file.name });
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        document.getElementById('badmintonForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Mengirim data...";
+
+            if (SCRIPT_URL === "ISI_DENGAN_URL_WEB_APP_ANDA") {
+                alert("Peringatan: Ganti variabel SCRIPT_URL di dalam kode dengan URL Apps Script Anda!");
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Kirim Pendaftaran";
+                return;
+            }
+
+            try {
+                const namaKlub = document.getElementById('namaKlub').value;
+                const phone = document.getElementById('phone').value;
+                const fileInput = document.getElementById('buktiTransfer').files[0];
+                
+                let fileData = null;
+                let fileName = null;
+                if (fileInput) {
+                    const convertedFile = await fileToBase64(fileInput);
+                    fileData = convertedFile.data;
+                    fileName = convertedFile.name;
+                }
+
+                const reguItems = document.querySelectorAll('.regu-item');
+                const reguList = [];
+
+                reguItems.forEach(item => {
+                    reguList.push({
+                        namaRegu: item.querySelector('[name="namaRegu"]').value,
+                        p1_1: item.querySelector('[name="p1_1"]').value,
+                        p1_2: item.querySelector('[name="p1_2"]').value,
+                        p2_1: item.querySelector('[name="p2_1"]').value,
+                        p2_2: item.querySelector('[name="p2_2"]').value,
+                        p3_1: item.querySelector('[name="p3_1"]').value,
+                        p3_2: item.querySelector('[name="p3_2"]').value,
+                        var cadangan: item.querySelector('[name="cadangan"]').value
+                    });
+                });
+
+                const payload = { namaKlub, phone, fileData, fileName, reguList };
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Penting agar tidak terkendala aturan CORS di browser
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                alert("Pendaftaran Berhasil Terkirim ke Google Sheet!");
+                document.getElementById('badmintonForm').reset();
+                renderReguForm(1);
+            } catch (error) {
+                console.error(error);
+                alert("Terjadi kesalahan saat mengirim data. Pastikan konfigurasi Anda benar.");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Kirim Pendaftaran";
+            }
+        });
+    </script>
+</body>
+</html>
